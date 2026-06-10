@@ -1,0 +1,19 @@
+# 日志文件
+logs/
+*.log
+
+# 数据库备份
+mysql/backup/*.sql.gz
+
+# Docker 数据卷（如果误创建了）
+mysql_data/
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo

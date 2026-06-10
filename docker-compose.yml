@@ -1,0 +1,78 @@
+services:
+  nginx:
+    image: nginx:1.25-alpine
+    container_name: lnmp_nginx
+    ports:
+      - "8080:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./nginx/html:/usr/share/nginx/html:ro
+      - ./logs/nginx:/var/log/nginx
+    depends_on:
+      - php1
+      - php2
+      - php3
+    networks:
+      - lnmp_network
+    restart: unless-stopped
+
+  php1:
+    build: ./php
+    container_name: lnmp_php1
+    volumes:
+      - ./php:/var/www/html:ro
+      - ./logs/php:/var/log/php-fpm
+    environment:
+      - PHP_ID=1
+    networks:
+      - lnmp_network
+    restart: unless-stopped
+
+  php2:
+    build: ./php
+    container_name: lnmp_php2
+    volumes:
+      - ./php:/var/www/html:ro
+      - ./logs/php:/var/log/php-fpm
+    environment:
+      - PHP_ID=2
+    networks:
+      - lnmp_network
+    restart: unless-stopped
+
+  php3:
+    build: ./php
+    container_name: lnmp_php3
+    volumes:
+      - ./php:/var/www/html:ro
+      - ./logs/php:/var/log/php-fpm
+    environment:
+      - PHP_ID=3
+    networks:
+      - lnmp_network
+    restart: unless-stopped
+
+  mysql:
+    image: mysql:8.0
+    container_name: lnmp_mysql
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      TZ: ${TZ:-Asia/Shanghai}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - lnmp_network
+    restart: unless-stopped
+
+networks:
+  lnmp_network:
+    driver: bridge
+
+volumes:
+  mysql_data:
